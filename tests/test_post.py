@@ -24,45 +24,52 @@ class TestPostAPI:
             '`/api/v1/posts/` возвращается ответ со статусом 401.'
         )
 
-    def check_post_data(self,
-                        response_data,
-                        request_method_and_url,
-                        db_post=None):
+    def check_post_data(
+        self,
+        response_data,
+        request_method_and_url,
+        db_post=None
+    ):
         expected_fields = ('id', 'text', 'author', 'pub_date')
         for field in expected_fields:
             assert field in response_data, (
-                'Проверьте, что для авторизованного пользователя ответ на '
-                f'{request_method_and_url} содержит поле `{field}` постов.'
+                'Проверьте, что для авторизованного пользователя '
+                'ответ на '
+                f'{request_method_and_url} содержит поле `{field}` '
+                'постов.'
             )
         if db_post:
             assert response_data['author'] == db_post.author.username, (
-                'Проверьте, что при запросе авторизованного пользователя к '
-                f'{request_method_and_url} ответ содержит поле `author` с '
-                'именем автора каждого из постов.'
+                'Проверьте, что при запросе авторизованного '
+                'пользователя к '
+                f'{request_method_and_url} ответ содержит поле '
+                '`author` с именем автора каждого из постов.'
             )
             assert response_data['id'] == db_post.id, (
-                'Проверьте, что при запросе авторизованного пользователя к '
-                f'{request_method_and_url} в ответе содержится корректный '
-                '`id` поста.'
+                'Проверьте, что при запросе авторизованного '
+                'пользователя к '
+                f'{request_method_and_url} в ответе содержится '
+                'корректный `id` поста.'
             )
 
     @pytest.mark.django_db(transaction=True)
     def test_posts_auth_get(self, user_client, post, another_post):
         response = user_client.get('/api/v1/posts/')
         assert response.status_code == HTTPStatus.OK, (
-            'Проверьте, что для авторизованного пользователя GET-запрос к '
-            '`/api/v1/posts/` возвращает статус 200.'
+            'Проверьте, что для авторизованного пользователя '
+            'GET-запрос к `/api/v1/posts/` возвращает статус 200.'
         )
 
         test_data = response.json()
         assert isinstance(test_data, list), (
-            'Проверьте, что для авторизованного пользователя GET-запрос к '
-            '`/api/v1/posts/` возвращает список.'
+            'Проверьте, что для авторизованного пользователя '
+            'GET-запрос к `/api/v1/posts/` возвращает список.'
         )
 
         assert len(test_data) == Post.objects.count(), (
-            'Проверьте, что для авторизованного пользователя GET-запрос к '
-            '`/api/v1/posts/` возвращает список всех постов.'
+            'Проверьте, что для авторизованного пользователя '
+            'GET-запрос к `/api/v1/posts/` возвращает список всех '
+            'постов.'
         )
 
         db_post = Post.objects.first()
@@ -78,13 +85,13 @@ class TestPostAPI:
         posts_count = Post.objects.count()
         response = user_client.post('/api/v1/posts/', data={})
         assert response.status_code == HTTPStatus.BAD_REQUEST, (
-            'Проверьте, что для авторизованного пользователя POST-запрос с '
-            'некорректными данными к `/api/v1/posts/` возвращает ответ со '
-            'статусом 400.'
+            'Проверьте, что для авторизованного пользователя '
+            'POST-запрос с некорректными данными к `/api/v1/posts/` '
+            'возвращает ответ со статусом 400.'
         )
         assert posts_count == Post.objects.count(), (
-            'Проверьте, что POST-запрос к `/api/v1/posts/` с некорректными '
-            'данными не создает новый пост.'
+            'Проверьте, что POST-запрос к `/api/v1/posts/` с '
+            'некорректными данными не создает новый пост.'
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -94,56 +101,60 @@ class TestPostAPI:
         data = {'text': 'Статья номер 3'}
         response = user_client.post('/api/v1/posts/', data=data)
         assert response.status_code == HTTPStatus.CREATED, (
-            'Проверьте, что для авторизованного пользователя  POST-запрос с '
-            'корректными данными к `/api/v1/posts/` возвращает ответ со '
-            'статусом 201.'
+            'Проверьте, что для авторизованного пользователя '
+            'POST-запрос с корректными данными к `/api/v1/posts/` '
+            'возвращает ответ со статусом 201.'
         )
 
         test_data = response.json()
         assert isinstance(test_data, dict), (
-            'Проверьте, что для авторизованного пользователя POST-запрос к '
-            '`/api/v1/posts/` возвращает ответ, содержащий данные нового '
-            'поста в виде словаря.'
+            'Проверьте, что для авторизованного пользователя '
+            'POST-запрос к `/api/v1/posts/` возвращает ответ, '
+            'содержащий данные нового поста в виде словаря.'
         )
-        self.check_post_data(test_data, 'POST-запрос к `/api/v1/posts/`')
+        self.check_post_data(
+            test_data, 'POST-запрос к `/api/v1/posts/`'
+        )
         assert test_data.get('text') == data['text'], (
-            'Проверьте, что для авторизованного пользователя POST-запрос к '
-            '`/api/v1/posts/` возвращает ответ, содержащий текст нового '
-            'поста в неизменном виде.'
+            'Проверьте, что для авторизованного пользователя '
+            'POST-запрос к `/api/v1/posts/` возвращает ответ, '
+            'содержащий текст нового поста в неизменном виде.'
         )
         assert test_data.get('author') == user.username, (
-            'Проверьте, что для авторизованного пользователя при создании '
-            'поста через POST-запрос к `/api/v1/posts/` ответ содержит поле '
-            '`author` с именем пользователя, отправившего запрос.'
+            'Проверьте, что для авторизованного пользователя при '
+            'создании поста через POST-запрос к `/api/v1/posts/` '
+            'ответ содержит поле `author` с именем пользователя, '
+            'отправившего запрос.'
         )
         assert post_count + 1 == Post.objects.count(), (
             'Проверьте, что POST-запрос с корректными данными от '
-            'авторизованного пользователя к `/api/v1/posts/` создает новый '
-            'пост.'
+            'авторизованного пользователя к `/api/v1/posts/` '
+            'создает новый пост.'
         )
 
     @pytest.mark.django_db(transaction=True)
     def test_post_unauth_create(self, client, user, another_user):
-        posts_conut = Post.objects.count()
+        posts_count = Post.objects.count()
 
         data = {'author': another_user.id, 'text': 'Статья номер 3'}
         response = client.post('/api/v1/posts/', data=data)
         assert response.status_code == HTTPStatus.UNAUTHORIZED, (
-            'Проверьте, что POST-запрос неавторизованного пользователя к '
-            '`/api/v1/posts/` возвращает ответ со статусом 401.'
+            'Проверьте, что POST-запрос неавторизованного '
+            'пользователя к `/api/v1/posts/` возвращает ответ со '
+            'статусом 401.'
         )
 
-        assert posts_conut == Post.objects.count(), (
-            'Проверьте, что POST-запрос неавторизованного пользователя к '
-            '`/api/v1/posts/` не создает новый пост.'
+        assert posts_count == Post.objects.count(), (
+            'Проверьте, что POST-запрос неавторизованного '
+            'пользователя к `/api/v1/posts/` не создает новый пост.'
         )
 
     def test_post_get_current(self, user_client, post):
         response = user_client.get(f'/api/v1/posts/{post.id}/')
 
         assert response.status_code == HTTPStatus.OK, (
-            'Страница `/api/v1/posts/{id}/` не найдена, проверьте этот адрес '
-            'в *urls.py*.'
+            'Страница `/api/v1/posts/{id}/` не найдена, проверьте '
+            'этот адрес в *urls.py*.'
         )
 
         test_data = response.json()

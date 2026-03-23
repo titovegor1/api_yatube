@@ -58,13 +58,13 @@ class TestGroupAPI:
         test_data = response.json()
         assert isinstance(test_data, list), (
             'Проверьте, что для авторизованного пользователя '
-            'GET-запрос к `/api/v1/groups/` возвращает информацию о группах '
-            'в виде списка.'
+            'GET-запрос к `/api/v1/groups/` возвращает информацию о '
+            'группах в виде списка.'
         )
         assert len(test_data) == Group.objects.count(), (
-            'Проверьте, что для авторизованного пользователя GET-запрос к '
-            '`/api/v1/groups/` возвращает информацию обо всех существующих '
-            'группах.'
+            'Проверьте, что для авторизованного '
+            'пользователя GET-запрос к `/api/v1/groups/` возвращает '
+            'информацию обо всем существующих группах.'
         )
 
         test_group = test_data[0]
@@ -120,8 +120,9 @@ class TestGroupAPI:
 
         test_data = response.json()
         assert isinstance(test_data, dict), (
-            'Проверьте, что при GET-запросе авторизованного пользователя к '
-            '`/api/v1/groups/{group_id}/` информация о группе возвращается в '
-            'виде словаря.'
+            'Проверьте, что при GET-запросе '
+            'авторизованного пользователя к '
+            '`/api/v1/groups/{group_id}/` информация о группе '
+            'возвращается в виде словаря.'
         )
         self.check_group_info(test_data, '/api/v1/groups/{group_id}/')

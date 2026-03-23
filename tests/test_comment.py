@@ -23,10 +23,12 @@ class TestCommentAPI:
             'статусом 401.'
         )
 
-    def check_comment_data(self,
-                           response_data,
-                           request_method_and_url,
-                           db_comment=None):
+    def check_comment_data(
+        self,
+        response_data,
+        request_method_and_url,
+        db_comment=None
+    ):
         expected_fields = ('id', 'text', 'author', 'post', 'created')
         for field in expected_fields:
             assert field in response_data, (
@@ -47,8 +49,14 @@ class TestCommentAPI:
             )
 
     @pytest.mark.django_db(transaction=True)
-    def test_comments_get(self, user_client, post, comment_1_post,
-                          comment_2_post, comment_1_another_post):
+    def test_comments_get(
+        self,
+        user_client,
+        post,
+        comment_1_post,
+        comment_2_post,
+        comment_1_another_post
+    ):
         response = user_client.get(f'/api/v1/posts/{post.id}/comments/')
         assert response.status_code == HTTPStatus.OK, (
             'Проверьте, что при GET-запросе авторизованного пользователя к '
@@ -76,8 +84,13 @@ class TestCommentAPI:
         )
 
     @pytest.mark.django_db(transaction=True)
-    def test_comments_post_auth_with_valid_data(self, user_client, post,
-                                                user, another_user):
+    def test_comments_post_auth_with_valid_data(
+        self,
+        user_client,
+        post,
+        user,
+        another_user
+    ):
         comments_count = Comment.objects.count()
         data = {
             'text': self.TEXT_FOR_COMMENT,
